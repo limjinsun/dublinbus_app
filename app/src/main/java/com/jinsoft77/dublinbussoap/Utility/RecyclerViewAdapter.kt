@@ -47,7 +47,7 @@ class RecyclerViewAdapter(
 
         p0.busNo.text = busList[p1].MonitoredVehicleJourney_PublishedLineName
         p0.destination.text = busList[p1].MonitoredVehicleJourney_DestinationName
-        p0.duetime.text = busList[p1].MonitoredCall_ExpectedArrivalTime
+        p0.duetime.text = busList[p1].Due_Time
     }
 
     // 1. 마이 뷰 홀더 리사이클러뷰의 뷰홀더 클래스를 상속받는다. 리사이클뷰에 보여지게될 하나하나 요소들과 반응한다.

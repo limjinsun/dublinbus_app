@@ -12,4 +12,5 @@ class Bus {
     lateinit var MonitoredCall_ExpectedArrivalTime: String
     lateinit var MonitoredCall_ExpectedDepartureTime: String
     lateinit var Timestamp: String
+    lateinit var Due_Time: String
 }

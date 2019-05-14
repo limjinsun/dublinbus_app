@@ -16,7 +16,7 @@ class DublinBusAPICall {
 
     val TAG = this.toString()
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    //@RequiresApi(Build.VERSION_CODES.O)
     fun getRealTimeStopData(stopId : String?, forceRefresh: String?) : MutableList<Bus> {
 
         var busList: MutableList<Bus> = mutableListOf()
@@ -58,12 +58,6 @@ class DublinBusAPICall {
                     bus.MonitoredCall_ExpectedDepartureTime = obj.getProperty("MonitoredCall_ExpectedDepartureTime").toString().substring(0,19)
                     bus.Timestamp = obj.getProperty("Timestamp").toString().substring(0,19)
 
-                    busList.add(bus)
-
-                    //val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-//                    var zonedDateTime: ZonedDateTime = ZonedDateTime.of(localDateTime, LocalTime.MIDNIGHT,  ZoneId.of("Europe/Dublin"))
-//                    val unixTimestamp = zonedDateTime.toEpochSecond()
-
                     var dublinZone : ZoneId = ZoneId.of("Europe/Dublin")
 
                     var expectedArrivalLocalDateTime: LocalDateTime = LocalDateTime.parse(bus.MonitoredCall_ExpectedArrivalTime, DateTimeFormatter.ISO_DATE_TIME)
@@ -71,14 +65,19 @@ class DublinBusAPICall {
 
                     var timestampLocalDateTime: LocalDateTime = LocalDateTime.parse(bus.Timestamp, DateTimeFormatter.ISO_DATE_TIME)
                     var epochSecondTimestamp: Long = timestampLocalDateTime.atZone(dublinZone).toEpochSecond()
-                    var timeGap = epochSecondOfArriavl - epochSecondTimestamp
 
+                    var timeGap = (epochSecondOfArriavl - epochSecondTimestamp) / 60
+                    bus.Due_Time = timeGap.toString()
+
+                    // Log.wtf(TAG, "MonitoredVehicleJourney_PublishedLineName : " + bus.MonitoredVehicleJourney_PublishedLineName)
                     Log.wtf(TAG, "epochSecondOfArriavl : " + epochSecondOfArriavl)
                     Log.wtf(TAG, "epochSecondTimestamp : " + epochSecondTimestamp)
                     Log.wtf(TAG, "time-gap : " + timeGap )
 
                     Log.wtf(TAG, "toEpochSecond : " + expectedArrivalLocalDateTime.atZone(ZoneId.of("Europe/Dublin")).toEpochSecond())
                     Log.wtf(TAG, "getRealTimeStopData called" + bus.toString())
+
+                    busList.add(bus)
                 }
 
             } else {

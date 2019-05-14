@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.ACCESS_FINE_LOCATION
                 )
             ) {
-                Toast.makeText(this, "Turn on GPS at Setting for This app", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please Turn on GPS at Setting for This app", Toast.LENGTH_SHORT).show()
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
