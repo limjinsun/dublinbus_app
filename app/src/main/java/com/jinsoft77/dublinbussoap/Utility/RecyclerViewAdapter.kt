@@ -1,7 +1,6 @@
 package com.jinsoft77.dublinbussoap
 
 import android.content.Context
-import android.content.res.AssetManager
 import android.graphics.Typeface
 import android.support.v7.widget.RecyclerView
 import android.util.Log

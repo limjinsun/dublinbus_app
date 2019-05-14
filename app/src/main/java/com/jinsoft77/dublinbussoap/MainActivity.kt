@@ -18,7 +18,6 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import weka.gui.beans.Visible
 
 class MainActivity : AppCompatActivity() {
 
