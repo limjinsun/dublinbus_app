@@ -9,13 +9,16 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.jinsoft77.dublinbussoap.entities.Destination
-import kotlinx.android.synthetic.main.activity_main.*
 import net.sf.javaml.core.kdtree.KDTree
 import android.location.LocationManager
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
+import android.view.View
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
+import weka.gui.beans.Visible
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,11 +29,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getLocationPermission()
+        var typeFace: Typeface = Typeface.createFromAsset(getAssets(),"fonts/NTR-Regular.ttf")
+        tv_loading.typeface = typeFace
 
-        button.setOnClickListener{
-            SoapServiceGetAllDestinations().execute()
-        }
+        progressBar.visibility = View.VISIBLE
+
+        getLocationPermission()
+        SoapServiceGetAllDestinations().execute()
+
+//        button.setOnClickListener{
+//            SoapServiceGetAllDestinations().execute()
+//        }
+
     }
 
     private fun isPermissionGranted(): Boolean {
@@ -100,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                 // sees the explanation, try again to request the permission.
             } else {
                 // No explanation needed, we can request the permission.
-                Log.wtf("ContextCompat.checkSelfPermission - ACCESS_FINE_LOCATION", "Asking permission")
+                Log.i("ContextCompat.checkSelfPermission - ACCESS_FINE_LOCATION", "Asking permission")
                 ActivityCompat.requestPermissions(
                     this@MainActivity,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -115,7 +125,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>,
                                             grantResults: IntArray) {
@@ -128,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    Log.wtf("grantResults",grantResults.toString())
+                    Log.w("grantResults",grantResults.toString())
                     getLocationPermission() // call permission again for "ACCESS_FINE_LOCATION"
                 } else {
                     // permission denied, boo! Disable the
@@ -146,13 +155,12 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     fun getLatitudeLongitude (): DoubleArray {
+
         val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
         val longitude = location.longitude
         val latitude = location.latitude
-
-        Log.wtf("Longitude" , longitude.toString())
-        Log.wtf("Latitude" , latitude.toString())
 
         val myLocationArray: DoubleArray = doubleArrayOf(latitude,longitude)
         return myLocationArray
@@ -161,7 +169,7 @@ class MainActivity : AppCompatActivity() {
     inner class SoapServiceGetAllDestinations: AsyncTask<Void, Void, MutableList<Destination>>() {
 
         override fun doInBackground(vararg params: Void?): MutableList<Destination>? {
-            Log.wtf(TAG,"SoapServiceGetAllDestinations called -- getting destinationList")
+            // Log.wtf(TAG,"SoapServiceGetAllDestinations called -- getting destinationList")
             var destinationsList: MutableList<Destination>? = DublinBusAPICall().getAllDestinations()
             return destinationsList
         }
@@ -185,15 +193,18 @@ class MainActivity : AppCompatActivity() {
                 var myLocationArray: DoubleArray = getLatitudeLongitude()
                 // find nearest stop.
                 var closestStop = kdTree.nearest(myLocationArray).toString()
-                Log.wtf("** DEBUG ** my location", myLocationArray[0].toString() + "+" +myLocationArray[1].toString())
-                Log.wtf("** DEBUG ** my closest stop", closestStop)
-                // update UI
-//                if (closestStop != null){
-//                    result.text = "Closest Stop is : " + closestStop
-//                }
-//
-                var i : Intent = Intent(this@MainActivity, BusStopInfoActivity::class.java).putExtra("nearestStop", closestStop)
+                var myNearStops: List<String>
+
+                // My 10 near stops.
+                myNearStops= kdTree.nearest(myLocationArray, 10).map{ it.toString()}
+                var myNearStopsArray= myNearStops.toTypedArray()
+
+                var i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
+                i.putExtra("myLocationArray", myLocationArray)
+                i.putExtra("myNearStopsArray", myNearStopsArray)
+                progressBar.visibility = View.GONE
                 startActivity(i)
+
             } else {
                 getLocationPermission()
             }

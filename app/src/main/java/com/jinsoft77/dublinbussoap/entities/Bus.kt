@@ -1,7 +1,5 @@
 package com.jinsoft77.dublinbussoap.entities
 
-import java.sql.Timestamp
-
 class Bus {
     lateinit var MonitoredStopVisit_MonitoringRef: String
     lateinit var MonitoredVehicleJourney_LineRef: String

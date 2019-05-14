@@ -7,8 +7,6 @@ import org.ksoap2.SoapEnvelope
 import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpTransportSE
-import android.os.Build
-import android.support.annotation.RequiresApi
 import java.time.*
 import java.time.format.DateTimeFormatter
 
@@ -69,20 +67,12 @@ class DublinBusAPICall {
                     var timeGap = (epochSecondOfArriavl - epochSecondTimestamp) / 60
                     bus.Due_Time = timeGap.toString()
 
-                    // Log.wtf(TAG, "MonitoredVehicleJourney_PublishedLineName : " + bus.MonitoredVehicleJourney_PublishedLineName)
-                    Log.wtf(TAG, "epochSecondOfArriavl : " + epochSecondOfArriavl)
-                    Log.wtf(TAG, "epochSecondTimestamp : " + epochSecondTimestamp)
-                    Log.wtf(TAG, "time-gap : " + timeGap )
-
-                    Log.wtf(TAG, "toEpochSecond : " + expectedArrivalLocalDateTime.atZone(ZoneId.of("Europe/Dublin")).toEpochSecond())
-                    Log.wtf(TAG, "getRealTimeStopData called" + bus.toString())
-
                     busList.add(bus)
                 }
 
             } else {
-                Log.wtf(TAG,"DocumentElement not found")
-                Log.v(TAG,"busList size : " + busList.size.toString())
+                Log.w(TAG,"DocumentElement not found")
+                // Log.v(TAG,"busList size : " + busList.size.toString())
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -147,8 +137,6 @@ class DublinBusAPICall {
                     destinationsList.add(mDestination)
                 }
             }
-
-            Log.wtf(TAG, "getAllDestinations called " + "destinationList.size : " + destinationsList.size.toString())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -156,4 +144,47 @@ class DublinBusAPICall {
         return destinationsList
     }
 
+
+    fun getDestinationsLatLong(stopNumber: String) : DoubleArray {
+
+        var latLong = DoubleArray(2, {i -> i*0.0})
+
+        val METHOD_NAME = "GetDestinations"
+        val SOAP_ACTION = Utils.SOAP_NAMESPACE + METHOD_NAME
+        val soapObject = SoapObject(Utils.SOAP_NAMESPACE, METHOD_NAME)
+
+        val envelope = SoapSerializationEnvelope(SoapEnvelope.VER11)
+        envelope.setOutputSoapObject(soapObject)
+
+        soapObject.addProperty("filter", stopNumber)
+
+        envelope.dotNet = true
+
+        val httpTransportSE = HttpTransportSE(Utils.SOAP_URL)
+
+        try {
+            httpTransportSE.call(SOAP_ACTION, envelope)
+            val obj = envelope.response as SoapObject
+
+            if(obj.hasProperty("Destinations")) {
+                var destinations = obj.getProperty("Destinations") as SoapObject
+                var destination = destinations.getProperty("Destination") as SoapObject
+
+                var mDestination = Destination()
+                mDestination.stopNumber = destination.getProperty("StopNumber").toString()
+                mDestination.longitude = destination.getProperty("Longitude").toString()
+                mDestination.latitude = destination.getProperty("Latitude").toString()
+                mDestination.description = destination.getProperty("Description").toString()
+
+                latLong[0] = mDestination.latitude.toDouble()
+                latLong[1] = mDestination.longitude.toDouble()
+
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return latLong
+    }
 }

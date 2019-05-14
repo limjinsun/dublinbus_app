@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">DublinBusSoap</string>
+    <string name="app_name">DublinBusTime</string>
+    <string name="title_activity_stop_maps">Map</string>
 </resources>
