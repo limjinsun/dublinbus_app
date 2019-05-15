@@ -5,7 +5,7 @@ RecyclerView Used. In order to get 10 nearest stop information, Java Machine Lea
 
 ## APP Use-Case
 
-<img src="https://media.giphy.com/media/H22MsoplYWkmv1isVf/giphy.gif" height="50%" width="50%">
+<img src="https://media.giphy.com/media/St37eEcPkyxOlv2hGN/giphy.gif" height="50%" width="50%">
 
 ## Getting Started
 
