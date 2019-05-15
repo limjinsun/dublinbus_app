@@ -16,16 +16,18 @@ import android.content.res.Resources
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import kotlinx.android.synthetic.main.activity_stop_maps.*
 
 class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     val TAG = this.toString()
 
     private lateinit var mMap: GoogleMap
+    var myLocationArray: DoubleArray = DoubleArray(2){ i -> i * 0.0 }
 
-    var myLocationArray: DoubleArray = DoubleArray(2, { i -> i * 0.0 })
     var myNearStopsArray: Array<String>? = null
     var myNearStopsDataMap: HashMap<String, DoubleArray> = HashMap()
+
     var markerDataMap: HashMap<Marker, String> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,14 +87,14 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         )
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(myLocationArray[0], myLocationArray[1]), 16.5f))
-        mMap.getUiSettings().setMapToolbarEnabled(false) // remove navigation menu when Marker clicked.
+        mMap.uiSettings.isMapToolbarEnabled = false // remove navigation menu when Marker clicked.
 
         mMap.setOnMarkerClickListener { marker ->
             if (markerDataMap.get(marker) != null) {
-                var string = markerDataMap.get(marker)
+                var stopNumber = markerDataMap.get(marker)
                 // Toast.makeText(this@NearMeMapsActivity, string, Toast.LENGTH_SHORT).show()
                 var i: Intent = Intent(this@NearMeMapsActivity, BusStopInfoActivity::class.java)
-                i.putExtra("stopNo", string)
+                i.putExtra("stopNo", stopNumber)
                 startActivity(i)
             }
             true
@@ -102,7 +104,6 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
     inner class SoapServiceGetMyNearDestinationsLatLong : AsyncTask<Array<String>, Void, HashMap<String, DoubleArray>>() {
 
         override fun doInBackground(vararg params: Array<String>): HashMap<String, DoubleArray> {
-
             // Log.wtf(TAG, "SoapServiceGet5Destinations doInB called -- ")
 
             for (i in 1..myNearStopsArray!!.size) {
@@ -113,16 +114,21 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             return myNearStopsDataMap
         }
 
-        override fun onPostExecute(result: HashMap<String, DoubleArray>) {
-            super.onPostExecute(result)
+        override fun onPostExecute(myNearStopsDataMap: HashMap<String, DoubleArray>) {
+            super.onPostExecute(myNearStopsDataMap)
 
-            for (i in 1..result.size) {
-                var latiLontiDoubleArray: DoubleArray = myNearStopsDataMap.get(myNearStopsArray!![i - 1])!!
+            for (i in 1..myNearStopsDataMap.size) {
+                var latiLontiDoubleArray: DoubleArray = myNearStopsDataMap[myNearStopsArray!![i - 1]]!!
                 val location = LatLng(latiLontiDoubleArray[0], latiLontiDoubleArray[1])
-                //val location = LatLng(closest5StopsLatLongArray[i-1][0], closest5StopsLatLongArray[i-1][1])
                 var marker = mMap.addMarker(MarkerOptions().position(location).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
                 markerDataMap.put(marker, myNearStopsArray!![i - 1])
             }
+
+            floatingActionButton2.setOnClickListener {
+                var i: Intent = Intent(this@NearMeMapsActivity, MainActivity::class.java)
+                startActivity(i)
+            }
         }
+
     }
 }

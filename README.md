@@ -1,6 +1,7 @@
 # Dublin Bus Android App Project - Kotlin
 
 Using user's mobile GPS information, Getting 10 near stops of Dublin Bus from user's current location. Indicating that onto Google Map. If the user presses the Bus-Stops marker, Show Detail of real-time bus information via Dublin Bus official SOAP API.
+RecyclerView Used. In order to get 10 nearest stop information, Java Machine Learning library Used. - KDtree implemantation. For consuming SOAP API, Ksoap2-android Used.
 
 ## Getting Started
 
@@ -30,4 +31,3 @@ Google map API token will be Needed.
 
 This project is licensed under the MIT License
 
-## Acknowledgments

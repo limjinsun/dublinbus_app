@@ -30,16 +30,105 @@ class MainActivity : AppCompatActivity() {
 
         var typeFace: Typeface = Typeface.createFromAsset(getAssets(),"fonts/NTR-Regular.ttf")
         tv_loading.typeface = typeFace
-
         progressBar.visibility = View.VISIBLE
 
-        getLocationPermission()
+        get_ACCESS_COARSE_LOCATION_Permission()
         SoapServiceGetAllDestinations().execute()
 
-//        button.setOnClickListener{
-//            SoapServiceGetAllDestinations().execute()
-//        }
+    }
 
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>,
+                                            grantResults: IntArray) {
+
+        Log.wtf("onRequestPermissionsResult","method called")
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION -> {
+                Log.wtf("onRequestPermissionsResult",MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION.toString())
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Log.w("grantResults",grantResults.toString())
+                    get_ACCESS_FINE_LOCATION_permission()
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return
+            }
+            else -> {
+                // Ignore all other requests.
+            }
+        }
+    }
+
+    private fun get_ACCESS_COARSE_LOCATION_Permission() {
+        if (ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.wtf("ContextCompat.checkSelfPermission - ACCESS_COARSE_LOCATION", "false")
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this@MainActivity,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            ) {
+                progressBar.visibility = View.GONE
+                Toast.makeText(this, "Please Turn on GPS at Setting for This app", Toast.LENGTH_SHORT).show()
+            } else {
+                // No explanation needed, we can request the permission.
+                Log.wtf("ContextCompat.checkSelfPermission - ACCESS_COARSE_LOCATION", "Asking permission")
+                ActivityCompat.requestPermissions(
+                    this@MainActivity,
+                    arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                    MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION
+                )
+            }
+        } else {
+            // Permission has already been granted
+        }
+    }
+
+    private fun get_ACCESS_FINE_LOCATION_permission() {
+        if (ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.wtf("ContextCompat.checkSelfPermission - ACCESS_FINE_LOCATION", "false")
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this@MainActivity,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            ) {
+                progressBar.visibility = View.GONE
+                Toast.makeText(this, "Please Turn on GPS at Setting for This app", Toast.LENGTH_SHORT).show()
+            } else {
+                // No explanation needed, we can request the permission.
+                Log.i("ContextCompat.checkSelfPermission - ACCESS_FINE_LOCATION", "Asking permission")
+                ActivityCompat.requestPermissions(
+                    this@MainActivity,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION
+                )
+
+                SoapServiceGetAllDestinations().execute()
+            }
+        } else {
+            // Permission has already been granted
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getLatitudeLongitude (): DoubleArray {
+
+        val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
+        val longitude = location.longitude
+        val latitude = location.latitude
+
+        val myLocationArray: DoubleArray = doubleArrayOf(latitude,longitude)
+        return myLocationArray
     }
 
     private fun isPermissionGranted(): Boolean {
@@ -57,118 +146,9 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun getLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                this@MainActivity,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.wtf("ContextCompat.checkSelfPermission - ACCESS_COARSE_LOCATION", "false")
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this@MainActivity,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            ) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                Log.wtf("ContextCompat.checkSelfPermission - ACCESS_COARSE_LOCATION", "Asking permission")
-                ActivityCompat.requestPermissions(
-                    this@MainActivity,
-                    arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                    MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION
-                )
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        } else {
-            // Permission has already been granted
-        }
-
-        if (ContextCompat.checkSelfPermission(
-                this@MainActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.wtf("ContextCompat.checkSelfPermission - ACCESS_FINE_LOCATION", "false")
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this@MainActivity,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            ) {
-                Toast.makeText(this, "Please Turn on GPS at Setting for This app", Toast.LENGTH_SHORT).show()
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed, we can request the permission.
-                Log.i("ContextCompat.checkSelfPermission - ACCESS_FINE_LOCATION", "Asking permission")
-                ActivityCompat.requestPermissions(
-                    this@MainActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION
-                )
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        } else {
-            // Permission has already been granted
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-
-        Log.wtf("onRequestPermissionsResult","method called")
-        when (requestCode) {
-            MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION -> {
-                Log.wtf("onRequestPermissionsResult",MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION.toString())
-                // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    Log.w("grantResults",grantResults.toString())
-                    getLocationPermission() // call permission again for "ACCESS_FINE_LOCATION"
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return
-            }
-            // Add other 'when' lines to check for other
-            // permissions this app might request.
-            else -> {
-                // Ignore all other requests.
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun getLatitudeLongitude (): DoubleArray {
-
-        val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-
-        val longitude = location.longitude
-        val latitude = location.latitude
-
-        val myLocationArray: DoubleArray = doubleArrayOf(latitude,longitude)
-        return myLocationArray
-    }
-
     inner class SoapServiceGetAllDestinations: AsyncTask<Void, Void, MutableList<Destination>>() {
 
         override fun doInBackground(vararg params: Void?): MutableList<Destination>? {
-            // Log.wtf(TAG,"SoapServiceGetAllDestinations called -- getting destinationList")
             var destinationsList: MutableList<Destination>? = DublinBusAPICall().getAllDestinations()
             return destinationsList
         }
@@ -195,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                 var myNearStops: List<String>
 
                 // My 10 near stops.
-                myNearStops= kdTree.nearest(myLocationArray, 10).map{ it.toString()}
+                myNearStops= kdTree.nearest(myLocationArray, 10).map{ it.toString() }
                 var myNearStopsArray= myNearStops.toTypedArray()
 
                 var i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
@@ -205,7 +185,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(i)
 
             } else {
-                getLocationPermission()
+                get_ACCESS_COARSE_LOCATION_Permission()
             }
 
         }

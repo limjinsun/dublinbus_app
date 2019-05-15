@@ -1,12 +1,15 @@
 package com.jinsoft77.dublinbussoap
 
+import android.graphics.Typeface
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.widget.Toast
 import com.jinsoft77.dublinbussoap.entities.Bus
+import kotlinx.android.synthetic.main.activity_bus_stop_info.*
 
 class BusStopInfoActivity : AppCompatActivity() {
 
@@ -35,6 +38,10 @@ class BusStopInfoActivity : AppCompatActivity() {
             else -> SoapServiceGetRealtimeStopData().execute(stopNo,"true")
         }
 
+        floatingActionButton2.setOnClickListener {
+            SoapServiceGetRealtimeStopData().execute(stopNo,"true")
+        }
+
     }
 
     inner class SoapServiceGetRealtimeStopData: AsyncTask<String, Void, MutableList<Bus>>() {
@@ -54,10 +61,17 @@ class BusStopInfoActivity : AppCompatActivity() {
 
     private fun initRecyclerView(busList: MutableList<Bus>) {
         // Log.wtf(TAG, "initRecyclerView: init recyclerview.")
-        val recyclerView = findViewById<RecyclerView>(R.id.recyler_view)
-        val adapter = RecyclerViewAdapter(this, busList )
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(LinearLayoutManager(this));
+        if(busList.size > 0){
+            val recyclerView = findViewById<RecyclerView>(R.id.recyler_view)
+            val adapter = RecyclerViewAdapter(this, busList )
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(LinearLayoutManager(this));
+        } else {
+            var typeFace: Typeface = Typeface.createFromAsset(getAssets(),"fonts/NTR-Regular.ttf")
+            tv_noinfo.typeface = typeFace
+            tv_noinfo.visibility = View.VISIBLE
+        }
+
     }
 
 }
