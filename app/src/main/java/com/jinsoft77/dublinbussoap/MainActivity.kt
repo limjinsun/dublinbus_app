@@ -131,71 +131,6 @@ class MainActivity: AppCompatActivity() {
         return true
     }
 
-    fun coroutineGetAllDestinationWithContext() = runBlocking{
-
-        var deferred = withContext(Dispatchers.IO) {
-            Log.wtf(TAG,"This first block is woring on " + Thread.currentThread().name)
-            DublinBusAPICall().getAllDestinations()
-        }
-
-        var destinationsList: MutableList<Destination>? = mutableListOf()
-        destinationsList = deferred as MutableList<Destination>
-
-        // Outside of runBlocking to show that it's running in the blocked main thread
-        Log.wtf(TAG,"This second block is woring on " + Thread.currentThread().name)
-        var kdTree: KDTree = fillKdTree(destinationsList)
-
-        if(isPermissionGranted()){
-            var myLocationArray: DoubleArray = getLatitudeLongitude()
-
-            // My 10 near stops.
-            var myNearStops: List<String> = kdTree.nearest(myLocationArray, 10).map{ it.toString() }
-            var myNearStopsArray= myNearStops.toTypedArray()
-
-            var i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
-            i.putExtra("myLocationArray", myLocationArray)
-            i.putExtra("myNearStopsArray", myNearStopsArray)
-            progressBar.visibility = View.GONE
-            startActivity(i)
-
-        } else {
-            get_ACCESS_COARSE_LOCATION_Permission()
-        }
-        // It still runs only after the runBlocking is fully executed.
-    }
-
-    fun coroutineGetAllDestination(){
-        var destinationsList: MutableList<Destination>? = mutableListOf()
-
-        runBlocking(Dispatchers.IO) {
-            destinationsList = DublinBusAPICall().getAllDestinations()
-            Log.wtf(TAG,"This thread is woring on " + Thread.currentThread().name)
-        }
-
-        // Outside of runBlocking to show that it's running in the blocked main thread
-        Log.wtf(TAG,"This second block is woring on " + Thread.currentThread().name)
-        var kdTree: KDTree = fillKdTree(destinationsList)
-
-        if(isPermissionGranted()){
-            var myLocationArray: DoubleArray = getLatitudeLongitude()
-
-            // My 10 near stops.
-            var myNearStops: List<String> = kdTree.nearest(myLocationArray, 10).map{ it.toString() }
-            var myNearStopsArray= myNearStops.toTypedArray()
-
-            var i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
-            i.putExtra("myLocationArray", myLocationArray)
-            i.putExtra("myNearStopsArray", myNearStopsArray)
-            progressBar.visibility = View.GONE
-            Log.wtf(TAG,"progressbar gone")
-            startActivity(i)
-
-        } else {
-            get_ACCESS_COARSE_LOCATION_Permission()
-        }
-        // It still runs only after the runBlocking is fully executed.
-    }
-
     inner class SoapServiceGetAllDestinations: AsyncTask<Void, Void, MutableList<Destination>>() {
 
         override fun doInBackground(vararg params: Void?): MutableList<Destination>? {
@@ -241,4 +176,80 @@ class MainActivity: AppCompatActivity() {
         }
         return kdTree
     }
+
+
+    /**
+
+    fun coroutineGetAllDestinationWithContext() = runBlocking{
+
+        var deferred = withContext(Dispatchers.IO) {
+            Log.wtf(TAG,"This first block is woring on " + Thread.currentThread().name)
+            DublinBusAPICall().getAllDestinations()
+        }
+
+        var destinationsList: MutableList<Destination>? = mutableListOf()
+        destinationsList = deferred as MutableList<Destination>
+
+        // Outside of runBlocking to show that it's running in the blocked main thread
+        Log.wtf(TAG,"This second block is woring on " + Thread.currentThread().name)
+        var kdTree: KDTree = fillKdTree(destinationsList)
+
+        if(isPermissionGranted()){
+            var myLocationArray: DoubleArray = getLatitudeLongitude()
+
+            // My 10 near stops.
+            var myNearStops: List<String> = kdTree.nearest(myLocationArray, 10).map{ it.toString() }
+            var myNearStopsArray= myNearStops.toTypedArray()
+
+            var i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
+            i.putExtra("myLocationArray", myLocationArray)
+            i.putExtra("myNearStopsArray", myNearStopsArray)
+            progressBar.visibility = View.GONE
+            startActivity(i)
+
+        } else {
+            get_ACCESS_COARSE_LOCATION_Permission()
+        }
+        // It still runs only after the runBlocking is fully executed.
+    }
+
+    **/
+
+    /**
+
+    fun coroutineGetAllDestination(){
+        var destinationsList: MutableList<Destination>? = mutableListOf()
+
+        runBlocking(Dispatchers.IO) {
+            destinationsList = DublinBusAPICall().getAllDestinations()
+            Log.wtf(TAG,"This thread is woring on " + Thread.currentThread().name)
+        }
+
+        // Outside of runBlocking to show that it's running in the blocked main thread
+        Log.wtf(TAG,"This second block is woring on " + Thread.currentThread().name)
+        var kdTree: KDTree = fillKdTree(destinationsList)
+
+        if(isPermissionGranted()){
+            var myLocationArray: DoubleArray = getLatitudeLongitude()
+
+            // My 10 near stops.
+            var myNearStops: List<String> = kdTree.nearest(myLocationArray, 10).map{ it.toString() }
+            var myNearStopsArray= myNearStops.toTypedArray()
+
+            var i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
+            i.putExtra("myLocationArray", myLocationArray)
+            i.putExtra("myNearStopsArray", myNearStopsArray)
+            progressBar.visibility = View.GONE
+            Log.wtf(TAG,"progressbar gone")
+            startActivity(i)
+
+        } else {
+            get_ACCESS_COARSE_LOCATION_Permission()
+        }
+        // It still runs only after the runBlocking is fully executed.
+    }
+
+    **/
+
+
 }
