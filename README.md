@@ -3,6 +3,10 @@
 Using user's mobile GPS information, Getting 10 near stops of Dublin Bus from user's current location. Indicating that onto Google Map. If the user presses the Bus-Stops marker, Show Detail of real-time bus information via Dublin Bus official SOAP API.
 RecyclerView Used. In order to get 10 nearest stop information, Java Machine Learning library Used. - KDtree implemantation. For consuming SOAP API, Ksoap2-android Used.
 
+## APP Use-Case
+
+<img src="https://media.giphy.com/media/H22MsoplYWkmv1isVf/giphy.gif" height="50%" width="50%">
+
 ## Getting Started
 
 > Import Project using Android Studio.

@@ -56,7 +56,6 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
         Log.wtf(TAG, "1 onCreate finished -- ")
 
-
     }
 
     /**
