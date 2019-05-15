@@ -17,6 +17,8 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import kotlinx.android.synthetic.main.activity_stop_maps.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 
 class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -52,6 +54,9 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        Log.wtf(TAG, "1 onCreate finished -- ")
+
+
     }
 
     /**
@@ -99,18 +104,48 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             true
         }
+        Log.wtf(TAG, "2 onMapReady finised -- ")
+        // coroutineBlockingGetMyNearDestinationsLatLong()
     }
+
+
+    /**
+
+    fun coroutineBlockingGetMyNearDestinationsLatLong() {
+
+        runBlocking (Dispatchers.IO) {
+            for (i in 1..myNearStopsArray!!.size) {
+                var latLong: DoubleArray = DublinBusAPICall().getDestinationsLatLong(myNearStopsArray!![i - 1])
+                myNearStopsDataMap.put(myNearStopsArray!![i - 1], latLong)
+            }
+            Log.wtf(TAG, "runBlocking(Dispatchers.IO) finised -- ")
+        }
+
+        for (i in 1..myNearStopsDataMap.size) {
+            var latiLontiDoubleArray: DoubleArray = myNearStopsDataMap[myNearStopsArray!![i - 1]]!!
+            val location = LatLng(latiLontiDoubleArray[0], latiLontiDoubleArray[1])
+            var marker = mMap.addMarker(MarkerOptions().position(location).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+            markerDataMap.put(marker, myNearStopsArray!![i - 1])
+        }
+
+        floatingActionButton2.setOnClickListener {
+            var i: Intent = Intent(this@NearMeMapsActivity, MainActivity::class.java)
+            startActivity(i)
+        }
+
+    }
+
+    **/
 
     inner class SoapServiceGetMyNearDestinationsLatLong : AsyncTask<Array<String>, Void, HashMap<String, DoubleArray>>() {
 
         override fun doInBackground(vararg params: Array<String>): HashMap<String, DoubleArray> {
             // Log.wtf(TAG, "SoapServiceGet5Destinations doInB called -- ")
-
             for (i in 1..myNearStopsArray!!.size) {
                 var latLong: DoubleArray = DublinBusAPICall().getDestinationsLatLong(myNearStopsArray!![i - 1])
                 myNearStopsDataMap.put(myNearStopsArray!![i - 1], latLong)
             }
-
+            Log.wtf(TAG, "3 doInBackground finished -- ")
             return myNearStopsDataMap
         }
 
@@ -128,7 +163,7 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 var i: Intent = Intent(this@NearMeMapsActivity, MainActivity::class.java)
                 startActivity(i)
             }
+            Log.wtf(TAG, "4 onPostExecute finished -- ")
         }
-
     }
 }
