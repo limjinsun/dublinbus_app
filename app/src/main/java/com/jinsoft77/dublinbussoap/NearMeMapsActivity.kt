@@ -25,7 +25,7 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
     val TAG = this.toString()
 
     private lateinit var mMap: GoogleMap
-    var myLocationArray: DoubleArray = DoubleArray(2){ i -> i * 0.0 }
+    var myLocationArray: DoubleArray? = DoubleArray(2){ i -> i * 0.0 }
 
     var myNearStopsArray: Array<String>? = null
     var myNearStopsDataMap: HashMap<String, DoubleArray> = HashMap()
@@ -54,7 +54,7 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        Log.wtf(TAG, "1 onCreate finished -- ")
+        Log.w(TAG, "1 onCreate finished -- ")
 
     }
 
@@ -86,24 +86,24 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.addMarker(
             MarkerOptions()
-                .position(LatLng(myLocationArray[0], myLocationArray[1]))
+                .position(LatLng(myLocationArray!![0], myLocationArray!![1]))
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
         )
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(myLocationArray[0], myLocationArray[1]), 16.5f))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(myLocationArray!![0], myLocationArray!![1]), 16.5f))
         mMap.uiSettings.isMapToolbarEnabled = false // remove navigation menu when Marker clicked.
 
         mMap.setOnMarkerClickListener { marker ->
             if (markerDataMap.get(marker) != null) {
-                var stopNumber = markerDataMap.get(marker)
+                val stopNumber = markerDataMap.get(marker)
                 // Toast.makeText(this@NearMeMapsActivity, string, Toast.LENGTH_SHORT).show()
-                var i: Intent = Intent(this@NearMeMapsActivity, BusStopInfoActivity::class.java)
+                val i: Intent = Intent(this@NearMeMapsActivity, BusStopInfoActivity::class.java)
                 i.putExtra("stopNo", stopNumber)
                 startActivity(i)
             }
             true
         }
-        Log.wtf(TAG, "2 onMapReady finised -- ")
+        Log.w(TAG, "2 onMapReady finised -- ")
         // coroutineBlockingGetMyNearDestinationsLatLong()
     }
 
@@ -141,10 +141,10 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         override fun doInBackground(vararg params: Array<String>): HashMap<String, DoubleArray> {
             // Log.wtf(TAG, "SoapServiceGet5Destinations doInB called -- ")
             for (i in 1..myNearStopsArray!!.size) {
-                var latLong: DoubleArray = DublinBusAPICall().getDestinationsLatLong(myNearStopsArray!![i - 1])
+                val latLong: DoubleArray = DublinBusAPICall().getDestinationsLatLong(myNearStopsArray!![i - 1])
                 myNearStopsDataMap.put(myNearStopsArray!![i - 1], latLong)
             }
-            Log.wtf(TAG, "3 doInBackground finished -- ")
+            Log.w(TAG, "3 doInBackground finished -- ")
             return myNearStopsDataMap
         }
 
@@ -152,17 +152,17 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             super.onPostExecute(myNearStopsDataMap)
 
             for (i in 1..myNearStopsDataMap.size) {
-                var latiLontiDoubleArray: DoubleArray = myNearStopsDataMap[myNearStopsArray!![i - 1]]!!
+                val latiLontiDoubleArray: DoubleArray = myNearStopsDataMap[myNearStopsArray!![i - 1]]!!
                 val location = LatLng(latiLontiDoubleArray[0], latiLontiDoubleArray[1])
-                var marker = mMap.addMarker(MarkerOptions().position(location).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+                val marker = mMap.addMarker(MarkerOptions().position(location).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
                 markerDataMap.put(marker, myNearStopsArray!![i - 1])
             }
 
             floatingActionButton2.setOnClickListener {
-                var i: Intent = Intent(this@NearMeMapsActivity, MainActivity::class.java)
+                val i: Intent = Intent(this@NearMeMapsActivity, MainActivity::class.java)
                 startActivity(i)
             }
-            Log.wtf(TAG, "4 onPostExecute finished -- ")
+            Log.w(TAG, "4 onPostExecute finished -- ")
         }
     }
 }

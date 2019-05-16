@@ -31,7 +31,7 @@ class MainActivity: AppCompatActivity() {
 
         get_ACCESS_COARSE_LOCATION_Permission()
 
-        var typeFace: Typeface = Typeface.createFromAsset(getAssets(),"fonts/NTR-Regular.ttf")
+        val typeFace: Typeface = Typeface.createFromAsset(getAssets(),"fonts/NTR-Regular.ttf")
         tv_loading.typeface = typeFace
         progressBar.visibility = View.VISIBLE
 
@@ -134,7 +134,7 @@ class MainActivity: AppCompatActivity() {
     inner class SoapServiceGetAllDestinations: AsyncTask<Void, Void, MutableList<Destination>>() {
 
         override fun doInBackground(vararg params: Void?): MutableList<Destination>? {
-            var destinationsList: MutableList<Destination>? = DublinBusAPICall().getAllDestinations()
+            val destinationsList: MutableList<Destination>? = DublinBusAPICall().getAllDestinations()
             Log.wtf(TAG,"This thread is woring on " + Thread.currentThread().name)
             return destinationsList
         }
@@ -144,14 +144,14 @@ class MainActivity: AppCompatActivity() {
             super.onPostExecute(destinationsList)
 
             // KDtree is algorithm for finding nearest stop.
-            var kdTree: KDTree = fillKdTree(destinationsList)
+            val kdTree: KDTree = fillKdTree(destinationsList)
             if(isPermissionGranted()){
-                var myLocationArray: DoubleArray = getLatitudeLongitude()
+                val myLocationArray: DoubleArray = getLatitudeLongitude()
                 // My 10 near stops.
-                var myNearStops: List<String> = kdTree.nearest(myLocationArray, 10).map{ it.toString() }
-                var myNearStopsArray= myNearStops.toTypedArray()
+                val myNearStops: List<String> = kdTree.nearest(myLocationArray, 10).map{ it.toString() }
+                val myNearStopsArray= myNearStops.toTypedArray()
 
-                var i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
+                val i : Intent = Intent(this@MainActivity, NearMeMapsActivity::class.java)
                 i.putExtra("myLocationArray", myLocationArray)
                 i.putExtra("myNearStopsArray", myNearStopsArray)
                 progressBar.visibility = View.GONE
@@ -164,7 +164,7 @@ class MainActivity: AppCompatActivity() {
     }
 
     private fun fillKdTree(destinationsList: MutableList<Destination>?): KDTree {
-        var kdTree: KDTree = KDTree(2)
+        val kdTree: KDTree = KDTree(2)
         if (destinationsList != null) {
             for (destination in destinationsList) {
                 val array: DoubleArray = doubleArrayOf(0.00, 0.00)

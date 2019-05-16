@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Toast
 import com.jinsoft77.dublinbussoap.entities.Bus
 import kotlinx.android.synthetic.main.activity_bus_stop_info.*
+import java.lang.ref.WeakReference
 
 class BusStopInfoActivity : AppCompatActivity() {
 
@@ -35,20 +36,22 @@ class BusStopInfoActivity : AppCompatActivity() {
         when {
             // If there is no internet connection, showing error.
             !Utils.isConnected(this@BusStopInfoActivity) -> Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show()
-            else -> SoapServiceGetRealtimeStopData().execute(stopNo,"true")
+            else -> SoapServiceGetRealtimeStopData(this@BusStopInfoActivity).execute(stopNo,"true")
         }
 
         floatingActionButton2.setOnClickListener {
-            SoapServiceGetRealtimeStopData().execute(stopNo,"true")
+            SoapServiceGetRealtimeStopData(this@BusStopInfoActivity).execute(stopNo,"true")
         }
 
     }
 
-    inner class SoapServiceGetRealtimeStopData: AsyncTask<String, Void, MutableList<Bus>>() {
+    class SoapServiceGetRealtimeStopData internal constructor(context: BusStopInfoActivity): AsyncTask<String, Void, MutableList<Bus>>() {
+
+        private val activityReference: WeakReference<BusStopInfoActivity> = WeakReference(context)
 
         override fun doInBackground(vararg params: String?): MutableList<Bus> {
             // Log.wtf(TAG, "SoapServiceGetRealtimeStopData doInB called -- ")
-            var busList: MutableList<Bus> = DublinBusAPICall().getRealTimeStopData(params[0],params[1])
+            val busList: MutableList<Bus> = DublinBusAPICall().getRealTimeStopData(params[0],params[1])
             return busList
         }
 
@@ -57,21 +60,22 @@ class BusStopInfoActivity : AppCompatActivity() {
             super.onPostExecute(busList)
             initRecyclerView(busList)
         }
-    }
 
-    private fun initRecyclerView(busList: MutableList<Bus>) {
-        // Log.wtf(TAG, "initRecyclerView: init recyclerview.")
-        if(busList.size > 0){
-            val recyclerView = findViewById<RecyclerView>(R.id.recyler_view)
-            val adapter = RecyclerViewAdapter(this, busList )
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(LinearLayoutManager(this));
-        } else {
-            var typeFace: Typeface = Typeface.createFromAsset(getAssets(),"fonts/NTR-Regular.ttf")
-            tv_noinfo.typeface = typeFace
-            tv_noinfo.visibility = View.VISIBLE
+        private fun initRecyclerView(busList: MutableList<Bus>) {
+            // Log.wtf(TAG, "initRecyclerView: init recyclerview.")
+            val activity = activityReference.get()
+            if(busList.size > 0){
+                val recyclerView = activity!!.findViewById<RecyclerView>(R.id.recyler_view)
+                val adapter = RecyclerViewAdapter(activity, busList )
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(LinearLayoutManager(activity));
+            } else {
+                val typeFace: Typeface = Typeface.createFromAsset(activity!!.getAssets(),"fonts/NTR-Regular.ttf")
+                activity.tv_noinfo.typeface = typeFace
+                activity.tv_noinfo.visibility = View.VISIBLE
+            }
+
         }
-
     }
 
 }
