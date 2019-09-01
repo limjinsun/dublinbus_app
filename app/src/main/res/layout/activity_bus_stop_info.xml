@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/activity_bus_stop_info"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -9,8 +9,8 @@
         tools:context=".BusStopInfoActivity">
 
     <!-- 아이디를 설정해주지 않으면 미리보기에서 라사이클 아이템이 안보임, 꼭설정해주기 -->
-    <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/recyler_view" tools:layout_editor_absoluteY="0dp" tools:layout_editor_absoluteX="0dp"/>
 
@@ -25,14 +25,20 @@
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true" app:srcCompat="@color/colorAccent"
-            android:id="@+id/floatingActionButton2" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" android:layout_marginBottom="28dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.935"
-            app:backgroundTint="@color/colorAccent"/>
+            android:clickable="true"
+            android:id="@+id/floatingActionButton2"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="28dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.935"
+            app:backgroundTint="@color/colorAccent"
+            android:src="@drawable/ic_reloading_foreground"
+            />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

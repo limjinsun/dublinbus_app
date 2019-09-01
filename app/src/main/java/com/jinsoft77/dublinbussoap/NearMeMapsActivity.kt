@@ -2,7 +2,6 @@ package com.jinsoft77.dublinbussoap
 
 import android.content.Intent
 import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 
@@ -13,24 +12,20 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import android.content.res.Resources
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.jinsoft77.dublinbussoap.entities.Destination
 import kotlinx.android.synthetic.main.activity_stop_maps.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 
 class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
-
     val TAG = this.toString()
-
     private lateinit var mMap: GoogleMap
-    var myLocationArray: DoubleArray? = DoubleArray(2){ i -> i * 0.0 }
-
-    var myNearStopsArray: Array<String>? = null
-    var myNearStopsDataMap: HashMap<String, DoubleArray> = HashMap()
-
-    var markerDataMap: HashMap<Marker, String> = HashMap()
+    private var myLocationArray: DoubleArray? = DoubleArray(2){ i -> i * 0.0 }
+    var myNearStopsArray: IntArray? = null
+    var markerDataMap: HashMap<Marker, Int> = HashMap()
+    var filteredDestinationList :ArrayList<Destination> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,20 +37,24 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 // extra is null
             } else {
                 myLocationArray = extras.getDoubleArray("myLocationArray")
-                myNearStopsArray = extras.getStringArray("myNearStopsArray")
+                myNearStopsArray = extras.getIntArray("myNearStopsArray")
+                filteredDestinationList = extras.getParcelableArrayList("filteredDestinationList")
             }
         } else {
             myLocationArray = savedInstanceState.getSerializable("myLocationArray") as DoubleArray
-            myNearStopsArray = savedInstanceState.getSerializable("myNearStopsArray") as Array<String>
+            myNearStopsArray = savedInstanceState.getSerializable("myNearStopsArray") as IntArray
         }
-
-        SoapServiceGetMyNearDestinationsLatLong().execute(myNearStopsArray)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        Log.w(TAG, "1 onCreate finished -- ")
 
+        floatingActionButton2.setOnClickListener {
+            val i = Intent(this@NearMeMapsActivity, MainActivity::class.java)
+            startActivity(i)
+        }
+
+        Log.w(TAG, "1 onCreate finished -- ")
     }
 
     /**
@@ -97,71 +96,33 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if (markerDataMap.get(marker) != null) {
                 val stopNumber = markerDataMap.get(marker)
                 // Toast.makeText(this@NearMeMapsActivity, string, Toast.LENGTH_SHORT).show()
-                val i: Intent = Intent(this@NearMeMapsActivity, BusStopInfoActivity::class.java)
+                val i = Intent(this@NearMeMapsActivity, BusStopInfoActivity::class.java)
                 i.putExtra("stopNo", stopNumber)
                 startActivity(i)
             }
             true
         }
+
+        SoapServiceGetMyNearDestinationsLatLong().execute(filteredDestinationList)
+
         Log.w(TAG, "2 onMapReady finised -- ")
-        // coroutineBlockingGetMyNearDestinationsLatLong()
     }
 
-
-    /**
-
-    fun coroutineBlockingGetMyNearDestinationsLatLong() {
-
-        runBlocking (Dispatchers.IO) {
-            for (i in 1..myNearStopsArray!!.size) {
-                var latLong: DoubleArray = DublinBusAPICall().getDestinationsLatLong(myNearStopsArray!![i - 1])
-                myNearStopsDataMap.put(myNearStopsArray!![i - 1], latLong)
-            }
-            Log.wtf(TAG, "runBlocking(Dispatchers.IO) finised -- ")
-        }
-
-        for (i in 1..myNearStopsDataMap.size) {
-            var latiLontiDoubleArray: DoubleArray = myNearStopsDataMap[myNearStopsArray!![i - 1]]!!
-            val location = LatLng(latiLontiDoubleArray[0], latiLontiDoubleArray[1])
-            var marker = mMap.addMarker(MarkerOptions().position(location).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
-            markerDataMap.put(marker, myNearStopsArray!![i - 1])
-        }
-
-        floatingActionButton2.setOnClickListener {
-            var i: Intent = Intent(this@NearMeMapsActivity, MainActivity::class.java)
-            startActivity(i)
-        }
-
-    }
-
-    **/
-
-    inner class SoapServiceGetMyNearDestinationsLatLong : AsyncTask<Array<String>, Void, HashMap<String, DoubleArray>>() {
-
-        override fun doInBackground(vararg params: Array<String>): HashMap<String, DoubleArray> {
-            // Log.wtf(TAG, "SoapServiceGet5Destinations doInB called -- ")
-            for (i in 1..myNearStopsArray!!.size) {
-                val latLong: DoubleArray = DublinBusAPICall().getDestinationsLatLong(myNearStopsArray!![i - 1])
-                myNearStopsDataMap.put(myNearStopsArray!![i - 1], latLong)
-            }
+    inner class SoapServiceGetMyNearDestinationsLatLong : AsyncTask<ArrayList<Destination>, Void, ArrayList<Destination>>() {
+        override fun doInBackground(vararg params: ArrayList<Destination>): ArrayList<Destination> {
             Log.w(TAG, "3 doInBackground finished -- ")
-            return myNearStopsDataMap
+            return params[0]
         }
 
-        override fun onPostExecute(myNearStopsDataMap: HashMap<String, DoubleArray>) {
-            super.onPostExecute(myNearStopsDataMap)
+        override fun onPostExecute(filteredDestinationList: ArrayList<Destination>) {
+            super.onPostExecute(filteredDestinationList)
 
-            for (i in 1..myNearStopsDataMap.size) {
-                val latiLontiDoubleArray: DoubleArray = myNearStopsDataMap[myNearStopsArray!![i - 1]]!!
-                val location = LatLng(latiLontiDoubleArray[0], latiLontiDoubleArray[1])
+            filteredDestinationList.forEach{
+                val location = LatLng(it.latitude.toDouble(), it.longitude.toDouble())
                 val marker = mMap.addMarker(MarkerOptions().position(location).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
-                markerDataMap.put(marker, myNearStopsArray!![i - 1])
+                markerDataMap[marker] = it.stopNumber.toInt()
             }
 
-            floatingActionButton2.setOnClickListener {
-                val i: Intent = Intent(this@NearMeMapsActivity, MainActivity::class.java)
-                startActivity(i)
-            }
             Log.w(TAG, "4 onPostExecute finished -- ")
         }
     }

@@ -23,7 +23,7 @@ Google map API token will be Needed.
 
 * [Android SDK](https://developer.android.com/studio/) - Android Studio provides the fastest tools for building apps
 * [Google Map](https://developers.google.com/maps/documentation/android-sdk/start/) - Google Map
-* [KDtree](http://java-ml.sourceforge.net/api/0.1.0/net/sf/javaml/core/kdtree/KDTree.html/) - Java Machine Learning Algorithm to fine Nearest Stop.
+* [KDtree](http://java-ml.sourceforge.net/api/0.1.0/net/sf/javaml/core/kdtree/KDTree.html/) - Java Machine Learning Algorithm to find Nearest Stop.
 * [Ksoap2](http://www.kobjects.org/ksoap2/index.html/) - A lightweight and efficient SOAP library for the Android platform.
 
 

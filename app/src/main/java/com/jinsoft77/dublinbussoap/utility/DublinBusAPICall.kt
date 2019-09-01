@@ -1,4 +1,4 @@
-package com.jinsoft77.dublinbussoap
+package com.jinsoft77.dublinbussoap.utility
 
 import android.util.Log
 import com.jinsoft77.dublinbussoap.entities.Bus
@@ -15,7 +15,7 @@ class DublinBusAPICall {
     val TAG = this.toString()
 
     //@RequiresApi(Build.VERSION_CODES.O)
-    fun getRealTimeStopData(stopId : String?, forceRefresh: String?) : MutableList<Bus> {
+    fun getRealTimeStopData(stopId : Int?) : MutableList<Bus> {
 
         var busList: MutableList<Bus> = mutableListOf()
         val METHOD_NAME = "GetRealTimeStopData"
@@ -23,7 +23,7 @@ class DublinBusAPICall {
         val soapObject = SoapObject(Utils.SOAP_NAMESPACE, METHOD_NAME)
 
         soapObject.addProperty("stopId", stopId)
-        soapObject.addProperty("forceRefresh", forceRefresh)
+        soapObject.addProperty("forceRefresh", "true")
 
         val envelope = SoapSerializationEnvelope(SoapEnvelope.VER11)
         envelope.setOutputSoapObject(soapObject)
@@ -107,8 +107,8 @@ class DublinBusAPICall {
         return result
     }
 
-    fun getAllDestinations() : MutableList<Destination>? {
-        var destinationsList : MutableList<Destination> = mutableListOf()
+    fun getAllDestinations() : ArrayList<Destination>? {
+        var destinationsList = ArrayList<Destination>()
         val METHOD_NAME = "GetAllDestinations"
         val SOAP_ACTION = Utils.SOAP_NAMESPACE + METHOD_NAME
         val soapObject = SoapObject(Utils.SOAP_NAMESPACE, METHOD_NAME)
@@ -145,9 +145,9 @@ class DublinBusAPICall {
     }
 
 
-    fun getDestinationsLatLong(stopNumber: String) : DoubleArray {
+    fun getDestinationsLatLong(stopNumber: Int) : DoubleArray {
 
-        var latLong = DoubleArray(2, {i -> i*0.0})
+        var latLong = DoubleArray(2) { i -> i*0.0}
 
         val METHOD_NAME = "GetDestinations"
         val SOAP_ACTION = Utils.SOAP_NAMESPACE + METHOD_NAME

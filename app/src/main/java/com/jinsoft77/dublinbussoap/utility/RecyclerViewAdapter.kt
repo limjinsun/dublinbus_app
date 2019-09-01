@@ -1,20 +1,18 @@
-package com.jinsoft77.dublinbussoap
+package com.jinsoft77.dublinbussoap.utility
 
 import android.content.Context
 import android.graphics.Typeface
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.jinsoft77.dublinbussoap.R
 import com.jinsoft77.dublinbussoap.entities.Bus
 
-class RecyclerViewAdapter(
-    context: Context,
-    busList: MutableList<Bus>
-    ) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
+class RecyclerViewAdapter(context: Context, busList: MutableList<Bus>) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     var typeFace: Typeface = Typeface.createFromAsset(context.assets,"fonts/NTR-Regular.ttf")
     val TAG:String = this.toString()
@@ -24,7 +22,7 @@ class RecyclerViewAdapter(
 
     // 2. create veiw holder using subclass
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
-        Log.wtf(TAG, "** onCreateViewHolder called**")
+        Log.wtf(TAG, "** onCreateViewHolder called **")
         var view: View = LayoutInflater.from(parent.context).inflate(R.layout.each_bus_info_item, parent, false)
         var viewHolder = ViewHolder(view)
         return viewHolder
@@ -35,10 +33,10 @@ class RecyclerViewAdapter(
         Log.wtf(TAG, "** getItemCount called**")
         return busList.size
     }
-
+    //
     // 3. binding element to View
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-         Log.wtf(TAG, "onBindViewHolder method called")
+        Log.wtf(TAG, "onBindViewHolder method called")
 
         viewHolder.busNo.text = busList[position].MonitoredVehicleJourney_PublishedLineName
         viewHolder.destination.text = busList[position].MonitoredVehicleJourney_DestinationName
@@ -57,10 +55,4 @@ class RecyclerViewAdapter(
             duetime.typeface = typeFace
         }
     }
-
 }
-
-//이 순서로 실행이 됨.
-//2019-05-14 21:55:54.965 19270-19270/com.jinsoft77.dublinbussoap E/com.jinsoft77.dublinbussoap.RecyclerViewAdapter@be2b09f: ** getItemCount called**
-//2019-05-14 21:55:54.974 19270-19270/com.jinsoft77.dublinbussoap E/com.jinsoft77.dublinbussoap.RecyclerViewAdapter@be2b09f: ** onCreateViewHolder called**
-//2019-05-14 21:55:54.983 19270-19270/com.jinsoft77.dublinbussoap E/com.jinsoft77.dublinbussoap.RecyclerViewAdapter@be2b09f: onBindViewHolder method called
