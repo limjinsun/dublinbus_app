@@ -19,17 +19,26 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.jinsoft77.dublinbussoap.entities.Destination
 import kotlinx.android.synthetic.main.activity_stop_maps.*
 
+
+
 class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
     val TAG = this.toString()
     private lateinit var mMap: GoogleMap
-    private var myLocationArray: DoubleArray? = DoubleArray(2){ i -> i * 0.0 }
+    private var myLocationArray: DoubleArray = DoubleArray(2) { i -> i * 0.00}
     var myNearStopsArray: IntArray? = null
     var markerDataMap: HashMap<Marker, Int> = HashMap()
     var filteredDestinationList :ArrayList<Destination> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_stop_maps)
+
+        loadActivity(savedInstanceState)
+        Log.w(TAG, "1 onCreate finished -- ")
+    }
+
+    fun loadActivity (savedInstanceState: Bundle?) : Unit {
 
         if (savedInstanceState == null) {
             val extras = intent.extras
@@ -50,13 +59,11 @@ class NearMeMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         floatingActionButton2.setOnClickListener {
-            val i = Intent(this@NearMeMapsActivity, MainActivity::class.java)
-            startActivity(i)
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
-
-        Log.w(TAG, "1 onCreate finished -- ")
     }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.

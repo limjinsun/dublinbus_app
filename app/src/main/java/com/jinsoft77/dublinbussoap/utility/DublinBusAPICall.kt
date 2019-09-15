@@ -11,7 +11,6 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 
 class DublinBusAPICall {
-
     val TAG = this.toString()
 
     //@RequiresApi(Build.VERSION_CODES.O)
@@ -69,7 +68,6 @@ class DublinBusAPICall {
 
                     busList.add(bus)
                 }
-
             } else {
                 Log.w(TAG,"DocumentElement not found")
                 // Log.v(TAG,"busList size : " + busList.size.toString())
@@ -77,7 +75,6 @@ class DublinBusAPICall {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return busList
     }
 
@@ -112,10 +109,9 @@ class DublinBusAPICall {
         val METHOD_NAME = "GetAllDestinations"
         val SOAP_ACTION = Utils.SOAP_NAMESPACE + METHOD_NAME
         val soapObject = SoapObject(Utils.SOAP_NAMESPACE, METHOD_NAME)
-
         val envelope = SoapSerializationEnvelope(SoapEnvelope.VER11)
-        envelope.setOutputSoapObject(soapObject)
 
+        envelope.setOutputSoapObject(soapObject)
         envelope.dotNet = true
 
         val httpTransportSE = HttpTransportSE(Utils.SOAP_URL)
@@ -140,51 +136,6 @@ class DublinBusAPICall {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return destinationsList
-    }
-
-
-    fun getDestinationsLatLong(stopNumber: Int) : DoubleArray {
-
-        var latLong = DoubleArray(2) { i -> i*0.0}
-
-        val METHOD_NAME = "GetDestinations"
-        val SOAP_ACTION = Utils.SOAP_NAMESPACE + METHOD_NAME
-        val soapObject = SoapObject(Utils.SOAP_NAMESPACE, METHOD_NAME)
-
-        val envelope = SoapSerializationEnvelope(SoapEnvelope.VER11)
-        envelope.setOutputSoapObject(soapObject)
-
-        soapObject.addProperty("filter", stopNumber)
-
-        envelope.dotNet = true
-
-        val httpTransportSE = HttpTransportSE(Utils.SOAP_URL)
-
-        try {
-            httpTransportSE.call(SOAP_ACTION, envelope)
-            val obj = envelope.response as SoapObject
-
-            if(obj.hasProperty("Destinations")) {
-                var destinations = obj.getProperty("Destinations") as SoapObject
-                var destination = destinations.getProperty("Destination") as SoapObject
-
-                var mDestination = Destination()
-                mDestination.stopNumber = destination.getProperty("StopNumber").toString()
-                mDestination.longitude = destination.getProperty("Longitude").toString()
-                mDestination.latitude = destination.getProperty("Latitude").toString()
-                mDestination.description = destination.getProperty("Description").toString()
-
-                latLong[0] = mDestination.latitude.toDouble()
-                latLong[1] = mDestination.longitude.toDouble()
-
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return latLong
     }
 }
